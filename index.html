@@ -1,255 +1,250 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>訂單查詢</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Tracking</title>
 
 <style>
 body {
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f7f7f8;
+  background: #f6f7f9;
   margin: 0;
 }
 
-/* 容器 */
+/* header */
+.header {
+  display:flex;
+  justify-content:space-between;
+  padding:16px 20px;
+  font-size:14px;
+  color:#6b7280;
+}
+
+/* container */
 .container {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 20px;
+  max-width:720px;
+  margin:auto;
+  padding:20px;
 }
 
-/* 手機 padding */
-@media (max-width: 640px) {
-  .container {
-    padding: 16px;
-  }
-}
-
-/* 標題 */
+/* title */
 .title {
-  text-align: center;
-  font-size: 26px;
-  font-weight: 600;
-  margin-bottom: 10px;
+  text-align:center;
+  font-size:26px;
+  font-weight:600;
 }
 
-/* 搜尋區 */
+/* search */
 .search-box {
-  display: flex;
-  gap: 10px;
-  margin: 20px 0 30px;
+  display:flex;
+  gap:10px;
+  margin:20px 0;
 }
 
-/* 手機改直排 */
-@media (max-width: 640px) {
-  .search-box {
-    flex-direction: column;
-  }
+@media(max-width:640px){
+  .search-box{flex-direction:column;}
 }
 
-.search-box input {
-  flex: 1;
-  padding: 14px;
-  border: 1px solid #e5e7eb;
-  font-size: 16px;
-  border-radius: 8px;
+input {
+  flex:1;
+  padding:14px;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
 }
 
-/* 按鈕 */
-.search-box button {
-  background: #111827;
-  color: white;
-  border: none;
-  padding: 14px;
-  font-size: 16px;
-  border-radius: 8px;
-  cursor: pointer;
+button {
+  padding:14px;
+  background:#111827;
+  color:white;
+  border:none;
+  border-radius:8px;
 }
 
-/* 卡片 */
+/* card */
 .card {
-  background: white;
-  border: 1px solid #e5e7eb;
-  padding: 16px;
-  margin-bottom: 24px;
-  border-radius: 12px;
+  background:white;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:20px;
+}
+
+.product {
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  margin-bottom:6px;
+}
+
+/* skeleton */
+.skeleton {
+  background: linear-gradient(90deg,#eee,#ddd,#eee);
+  background-size:200% 100%;
+  animation: loading 1.2s infinite;
+  border-radius:6px;
+}
+
+@keyframes loading {
+  0% {background-position:200% 0;}
+  100% {background-position:-200% 0;}
 }
 
 /* timeline */
 .timeline {
-  position: relative;
-  margin-top: 20px;
+  position:relative;
 }
 
-/* 線 */
 .timeline::before {
-  content: "";
-  position: absolute;
-  left: 16px;
-  top: 6px;
-  bottom: 0;
-  width: 2px;
-  background: #e5e7eb;
+  content:"";
+  position:absolute;
+  left:16px;
+  top:6px;
+  bottom:0;
+  width:2px;
+  background:#e5e7eb;
 }
 
-/* step */
 .step {
-  display: flex;
-  gap: 14px;
-  margin-bottom: 28px;
+  display:flex;
+  gap:14px;
+  margin-bottom:28px;
 }
 
-/* icon */
 .icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: #f3f4f6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width:32px;
+  height:32px;
+  border-radius:8px;
+  background:#f3f4f6;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-.step.done .icon {
-  background: #2f343a;
-}
+.step.done .icon {background:#2f343a;}
+.step.active .icon {background:#111827;}
 
-.step.active .icon {
-  background: #111827;
-}
+.icon svg {width:16px;height:16px;stroke:#9ca3af;}
+.step.done svg,.step.active svg {stroke:white;}
 
-.icon svg {
-  width: 16px;
-  height: 16px;
-  stroke: #9ca3af;
-}
+.title-step {font-size:15px;color:#9ca3af;}
+.step.done .title-step,.step.active .title-step {color:#111827;font-weight:500;}
 
-.step.done svg,
-.step.active svg {
-  stroke: white;
-}
-
-/* 文字 */
-.title-step {
-  font-size: 15px;
-  color: #9ca3af;
-}
-
-.step.done .title-step,
-.step.active .title-step {
-  color: #111827;
-  font-weight: 500;
-}
-
-/* 標籤 */
 .current-tag {
-  margin-top: 6px;
-  font-size: 12px;
-  background: #111827;
-  color: white;
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 6px;
+  margin-top:6px;
+  font-size:12px;
+  background:#111827;
+  color:white;
+  padding:4px 8px;
+  border-radius:6px;
 }
 
-/* 時間 */
 .time {
-  font-size: 12px;
-  color: #9ca3af;
-  margin-top: 6px;
+  font-size:12px;
+  color:#9ca3af;
+  margin-top:6px;
 }
 </style>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
 </head>
 
 <body>
 
-<div class="header">by Eliss Collection</div>
+<div class="header">
+  <div>by Eliss Collection</div>
+  <div onclick="toggleLang()" style="cursor:pointer;">EN</div>
+</div>
 
 <div class="container">
 
-<div class="title">訂單追蹤</div>
+<div class="title" id="title">訂單追蹤</div>
 
 <div class="search-box">
   <input id="orderId" placeholder="輸入訂單編號">
-  <button onclick="checkOrder()">查詢訂單</button>
+  <button onclick="checkOrder()" id="btn">查詢</button>
 </div>
 
-<div id="card" class="card" style="display:none;">
-  <div class="card-item" id="orderInfo"></div>
-</div>
-
-<div id="timeline" class="timeline"></div>
+<div id="card"></div>
+<div id="timeline"></div>
 
 </div>
 
 <script>
-const steps = [
-  { text: "已接收訂單", icon: "check" },
-  { text: "正在採購", icon: "check" },
-  { text: "採購完成，前往海外轉運站", icon: "check" },
-  { text: "已抵達海外轉運站", icon: "warehouse" },
-  { text: "前往海外機場", icon: "truck" },
-  { text: "抵達海外機場，理貨中", icon: "box" },
-  { text: "已上飛機", icon: "plane" },
-  { text: "抵達台灣，清關中", icon: "location" },
-  { text: "已入庫台灣工作室", icon: "building" },
-  { text: "出貨包裝中", icon: "gift" },
-  { text: "已寄出，請準備收貨", icon: "spark" }
+let lang="zh";
+
+/* 語系 */
+const text = {
+  zh:{title:"訂單追蹤",btn:"查詢",current:"目前進度"},
+  en:{title:"Order Tracking",btn:"Search",current:"Current"}
+};
+
+function toggleLang(){
+  lang = lang==="zh"?"en":"zh";
+  document.getElementById("title").innerText=text[lang].title;
+  document.getElementById("btn").innerText=text[lang].btn;
+}
+
+/* icon */
+function icon(name){
+  const i={
+    check:`<svg fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>`,
+    plane:`<svg fill="none" stroke-width="2"><path d="M2 16l20-8-8 20"/></svg>`,
+    box:`<svg fill="none" stroke-width="2"><path d="M3 7l9-4 9 4-9 4z"/></svg>`
+  };
+  return i[name]||i.check;
+}
+
+/* steps */
+const steps=[
+"已接收訂單","正在採購","採購完成，前往海外轉運站",
+"已抵達海外轉運站","前往海外機場","抵達海外機場，理貨中",
+"已上飛機","抵達台灣，清關中","已入庫台灣工作室",
+"出貨包裝中","已寄出，請準備收貨"
 ];
 
-function getIcon(name) {
-  const icons = {
-    check:`<svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>`,
-    warehouse:`<svg fill="none" stroke-width="2"><path d="M3 10l9-7 9 7v10H3z"/></svg>`,
-    truck:`<svg fill="none" stroke-width="2"><path d="M3 7h13v10H3z"/></svg>`,
-    box:`<svg fill="none" stroke-width="2"><path d="M3 7l9-4 9 4-9 4z"/></svg>`,
-    plane:`<svg fill="none" stroke-width="2"><path d="M2 16l20-8-8 20z"/></svg>`,
-    location:`<svg fill="none" stroke-width="2"><path d="M12 21s-6-5-6-10a6 6 0 1112 0c0 5-6 10-6 10z"/></svg>`,
-    building:`<svg fill="none" stroke-width="2"><path d="M4 22V2h16v20"/></svg>`,
-    gift:`<svg fill="none" stroke-width="2"><path d="M20 12v10H4V12"/></svg>`,
-    spark:`<svg fill="none" stroke-width="2"><path d="M12 2v4M12 18v4"/></svg>`
-  };
-  return icons[name];
-}
+/* 查詢 */
+async function checkOrder(){
 
-async function checkOrder() {
-  const orderId = document.getElementById("orderId").value;
+  /* skeleton */
+  document.getElementById("card").innerHTML=`
+  <div class="card">
+    <div class="skeleton" style="height:14px;width:70%;margin-bottom:10px;"></div>
+    <div class="skeleton" style="height:14px;width:50%;"></div>
+  </div>`;
 
-  const res = await fetch(`https://script.google.com/macros/s/AKfycbwEq4xA34BwxsPlfbQq2akALTk0X4g6ICvpPc8qUdxkeKT4TVNN5qfBK4ET8beIREhtaA/exec?email=test&orderId=${orderId}`);
+  document.getElementById("timeline").innerHTML=`
+  <div class="skeleton" style="height:200px;"></div>`;
+
+  const res = await fetch(`https://script.google.com/macros/s/AKfycbwEq4xA34BwxsPlfbQq2akALTk0X4g6ICvpPc8qUdxkeKT4TVNN5qfBK4ET8beIREhtaA/exec?email=test&orderId=${orderId.value}`);
   const data = await res.json();
 
-  document.getElementById("card").style.display = "block";
-  document.getElementById("orderInfo").innerText = "訂單編號：" + orderId;
+  /* 商品卡片 */
+  document.getElementById("card").innerHTML=`
+  <div class="card">
+    <div class="product">訂單編號：${orderId.value}</div>
+    <div class="product">狀態：${data.status}</div>
+  </div>`;
 
-  const index = steps.findIndex(s => s.text === data.status);
-  renderTimeline(index >= 0 ? index : 0);
+  const index = steps.indexOf(data.status);
+  renderTimeline(index>=0?index:0);
 }
 
-function renderTimeline(currentIndex) {
-  const timeline = document.getElementById("timeline");
-  timeline.innerHTML = "";
+/* timeline */
+function renderTimeline(current){
+  const el=document.getElementById("timeline");
+  el.innerHTML="";
 
-  steps.forEach((step, i) => {
-    let cls = "";
-    if (i < currentIndex) cls = "done";
-    else if (i === currentIndex) cls = "active";
+  steps.forEach((s,i)=>{
+    let c=i<current?"done":i===current?"active":"";
 
-    const el = document.createElement("div");
-    el.className = `step ${cls}`;
-
-    el.innerHTML = `
-      <div class="icon">${getIcon(step.icon)}</div>
+    el.innerHTML+=`
+    <div class="step ${c}">
+      <div class="icon">${icon(i===current?"plane":"check")}</div>
       <div>
-        <div class="title-step">${step.text}</div>
-        ${i === currentIndex ? `<div class="current-tag">目前進度</div>
-        <div class="time">${new Date().toLocaleString()}</div>` : ""}
+        <div class="title-step">${s}</div>
+        ${i===current?`<div class="current-tag">${text[lang].current}</div>
+        <div class="time">${new Date().toLocaleString()}</div>`:""}
       </div>
-    `;
-
-    timeline.appendChild(el);
+    </div>`;
   });
 }
 </script>
