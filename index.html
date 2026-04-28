@@ -6,143 +6,102 @@
 <title>Order Tracking</title>
 
 <style>
-body {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f6f7f9;
-  margin: 0;
-}
-
-/* header */
-.header {
-  display:flex;
-  justify-content:space-between;
-  padding:16px 20px;
-  font-size:14px;
-  color:#6b7280;
-}
-
-/* container */
-.container {
-  max-width:720px;
-  margin:auto;
-  padding:20px;
-}
-
-/* title */
-.title {
-  text-align:center;
-  font-size:26px;
-  font-weight:600;
-}
-
-/* search */
-.search-box {
-  display:flex;
-  gap:10px;
-  margin:20px 0;
-}
-
-@media(max-width:640px){
-  .search-box{flex-direction:column;}
-}
-
-input {
-  flex:1;
-  padding:14px;
-  border:1px solid #e5e7eb;
-  border-radius:8px;
-}
-
-button {
-  padding:14px;
-  background:#111827;
-  color:white;
-  border:none;
-  border-radius:8px;
-}
-
-/* card */
-.card {
-  background:white;
-  border:1px solid #e5e7eb;
-  border-radius:12px;
-  padding:16px;
-  margin-bottom:20px;
-}
-
-.product {
-  display:flex;
-  justify-content:space-between;
-  font-size:14px;
-  margin-bottom:6px;
-}
-
-/* skeleton */
-.skeleton {
-  background: linear-gradient(90deg,#eee,#ddd,#eee);
-  background-size:200% 100%;
-  animation: loading 1.2s infinite;
-  border-radius:6px;
-}
-
-@keyframes loading {
-  0% {background-position:200% 0;}
-  100% {background-position:-200% 0;}
-}
-
-/* timeline */
 .timeline {
-  position:relative;
+  position: relative;
+  margin-top: 30px;
+  padding-left: 10px;
 }
 
+/* 中心線 */
 .timeline::before {
-  content:"";
-  position:absolute;
-  left:16px;
-  top:6px;
-  bottom:0;
-  width:2px;
-  background:#e5e7eb;
+  content: "";
+  position: absolute;
+  left: 17px;
+  top: 10px;
+  bottom: 0;
+  width: 1.5px;
+  background: #e5e7eb;
 }
 
+/* 每一列 */
 .step {
-  display:flex;
-  gap:14px;
-  margin-bottom:28px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 34px;
 }
 
+/* icon 外框 */
 .icon {
-  width:32px;
-  height:32px;
-  border-radius:8px;
-  background:#f3f4f6;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #f5f6f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
 }
 
-.step.done .icon {background:#2f343a;}
-.step.active .icon {background:#111827;}
+/* 完成 */
+.step.done .icon {
+  background: transparent;
+}
 
-.icon svg {width:16px;height:16px;stroke:#9ca3af;}
-.step.done svg,.step.active svg {stroke:white;}
+/* 當前 */
+.step.active .icon {
+  background: #111827;
+}
 
-.title-step {font-size:15px;color:#9ca3af;}
-.step.done .title-step,.step.active .title-step {color:#111827;font-weight:500;}
+/* SVG */
+.icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: #c0c4c9;
+}
 
+/* 已完成（淡灰勾） */
+.step.done svg {
+  stroke: #9ca3af;
+}
+
+/* 當前 */
+.step.active svg {
+  stroke: white;
+}
+
+/* 文字 */
+.title-step {
+  font-size: 15px;
+  color: #9ca3af;
+}
+
+/* 已完成 */
+.step.done .title-step {
+  color: #6b7280;
+}
+
+/* 當前 */
+.step.active .title-step {
+  color: #111827;
+  font-weight: 600;
+}
+
+/* 當前標籤 */
 .current-tag {
-  margin-top:6px;
-  font-size:12px;
-  background:#111827;
-  color:white;
-  padding:4px 8px;
-  border-radius:6px;
+  margin-top: 6px;
+  font-size: 12px;
+  background: #111827;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px;
 }
 
+/* 時間 */
 .time {
-  font-size:12px;
-  color:#9ca3af;
-  margin-top:6px;
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 6px;
 }
 </style>
 </head>
