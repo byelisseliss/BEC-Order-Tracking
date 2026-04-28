@@ -18,11 +18,93 @@
       padding: 10px 20px;
       cursor: pointer;
     }
+
+<!-- 👇 status line -->
+  .timeline {
+  width: 320px;
+  margin: 40px auto;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #d1d5db;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 18px;
+  z-index: 1;
+}
+
+.step.active .icon {
+  background: #374151;
+  color: white;
+}
+
+.step.done .icon {
+  background: #4b5563;
+  color: white;
+}
+
+.content {
+  margin-left: 16px;
+}
+
+.title {
+  font-size: 15px;
+  color: #9ca3af;
+}
+
+.step.active .title,
+.step.done .title {
+  color: #111827;
+  font-weight: 500;
+}
+
+.current-tag {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  background: #374151;
+  color: white;
+  border-radius: 6px;
+}
+
+.time {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 6px;
+}
+
+  
+  
   </style>
 </head>
 <body>
 
-  <h2>📦 訂單查詢</h2>
+  <h2>訂單查詢</h2>
 
   <input id="email" placeholder="輸入 Email"><br>
   <input id="orderId" placeholder="輸入訂單編號"><br><br>
@@ -31,6 +113,9 @@
 
   <h3 id="result"></h3>
 
+
+<div id="timeline" class="timeline"></div>
+  
   <script>
     async function checkOrder() {
       const email = document.getElementById("email").value;
@@ -40,7 +125,58 @@
       const data = await res.json();
 
       document.getElementById("result").innerText = "訂單狀態：" + data.status;
+
+      const stepIndex = statusMap[data.status] ?? 0;
+renderTimeline(stepIndex);
     }
+
+  
+  function renderTimeline(currentStepIndex) {
+  const statusMap = {
+  "已接收訂單": 0,
+  "正在採購": 1,
+  "採購完成，前往海外轉運站": 2,
+  "已抵達海外轉運站": 3,
+  "前往海外機場": 4,
+  "抵達海外機場，理貨中": 5,
+  "已上飛機": 6,
+  "抵達台灣，清關中": 7,
+  "已入庫台灣工作室": 8,
+  "出貨包裝中": 9,
+  "已寄出，請準備收貨": 10
+};
+
+  const timeline = document.getElementById("timeline");
+  timeline.innerHTML = "";
+
+  steps.forEach((text, index) => {
+    let statusClass = "";
+
+    if (index < currentStepIndex) statusClass = "done";
+    else if (index === currentStepIndex) statusClass = "active";
+
+    const stepEl = document.createElement("div");
+    stepEl.className = `step ${statusClass}`;
+
+    stepEl.innerHTML = `
+      <div class="icon">
+        ${index < currentStepIndex ? "✓" : ""}
+      </div>
+      <div class="content">
+        <div class="title">${text}</div>
+        ${
+          index === currentStepIndex
+            ? `<div class="current-tag">目前進度</div>
+               <div class="time">${new Date().toLocaleString()}</div>`
+            : ""
+        }
+      </div>
+    `;
+
+    timeline.appendChild(stepEl);
+  });
+}
+  
   </script>
 
 </body>
