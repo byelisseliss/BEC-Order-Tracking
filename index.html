@@ -11,90 +11,99 @@ body {
   margin: 0;
 }
 
-/* Header */
-.header {
-  text-align: center;
-  padding: 20px;
-  font-size: 14px;
-  color: #6b7280;
-}
-
-/* Container */
+/* 容器 */
 .container {
   max-width: 720px;
   margin: 0 auto;
   padding: 20px;
 }
 
-/* Title */
+/* 手機 padding */
+@media (max-width: 640px) {
+  .container {
+    padding: 16px;
+  }
+}
+
+/* 標題 */
 .title {
   text-align: center;
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 600;
   margin-bottom: 10px;
 }
 
-/* Search */
+/* 搜尋區 */
 .search-box {
   display: flex;
   gap: 10px;
   margin: 20px 0 30px;
 }
 
-.search-box input {
-  flex: 1;
-  padding: 12px;
-  border: 1px solid #e5e7eb;
-  font-size: 14px;
+/* 手機改直排 */
+@media (max-width: 640px) {
+  .search-box {
+    flex-direction: column;
+  }
 }
 
+.search-box input {
+  flex: 1;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  font-size: 16px;
+  border-radius: 8px;
+}
+
+/* 按鈕 */
 .search-box button {
   background: #111827;
   color: white;
   border: none;
-  padding: 12px 20px;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 8px;
   cursor: pointer;
 }
 
-/* Card */
+/* 卡片 */
 .card {
   background: white;
   border: 1px solid #e5e7eb;
-  padding: 20px;
-  margin-bottom: 30px;
+  padding: 16px;
+  margin-bottom: 24px;
+  border-radius: 12px;
 }
 
-.card-item {
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-/* Timeline */
+/* timeline */
 .timeline {
   position: relative;
   margin-top: 20px;
 }
 
+/* 線 */
 .timeline::before {
   content: "";
   position: absolute;
-  left: 18px;
+  left: 16px;
   top: 6px;
   bottom: 0;
-  width: 1.5px;
+  width: 2px;
   background: #e5e7eb;
 }
 
+/* step */
 .step {
   display: flex;
-  gap: 16px;
-  margin-bottom: 34px;
+  gap: 14px;
+  margin-bottom: 28px;
 }
 
+/* icon */
 .icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   background: #f3f4f6;
   display: flex;
   align-items: center;
@@ -110,8 +119,8 @@ body {
 }
 
 .icon svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   stroke: #9ca3af;
 }
 
@@ -120,6 +129,7 @@ body {
   stroke: white;
 }
 
+/* 文字 */
 .title-step {
   font-size: 15px;
   color: #9ca3af;
@@ -131,16 +141,18 @@ body {
   font-weight: 500;
 }
 
+/* 標籤 */
 .current-tag {
   margin-top: 6px;
   font-size: 12px;
   background: #111827;
   color: white;
   display: inline-block;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: 6px;
 }
 
+/* 時間 */
 .time {
   font-size: 12px;
   color: #9ca3af;
