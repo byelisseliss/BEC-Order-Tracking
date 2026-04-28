@@ -3,105 +3,214 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Order Tracking</title>
 
 <style>
-.timeline {
-  position: relative;
-  margin-top: 30px;
-  padding-left: 10px;
+body{
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  background:#f6f7f9;
+  margin:0;
 }
 
-/* 中心線 */
-.timeline::before {
-  content: "";
-  position: absolute;
-  left: 17px;
-  top: 10px;
-  bottom: 0;
-  width: 1.5px;
-  background: #e5e7eb;
+/* header */
+.header{
+  text-align:center;
+  font-size:13px;
+  color:#6b7280;
+  padding:16px;
+  border-bottom:1px solid #eee;
 }
 
-/* 每一列 */
-.step {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 34px;
+/* container */
+.container{
+  max-width:560px;
+  margin:auto;
+  padding:24px 16px;
 }
 
-/* icon 外框 */
-.icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  background: #f5f6f7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
+/* title */
+.title{
+  text-align:center;
+  font-size:24px;
+  font-weight:600;
 }
 
-/* 完成 */
-.step.done .icon {
-  background: transparent;
+.subtitle{
+  text-align:center;
+  font-size:13px;
+  color:#9ca3af;
+  margin:6px 0 20px;
 }
 
-/* 當前 */
-.step.active .icon {
-  background: #111827;
+/* search */
+.search-box{
+  display:flex;
+  gap:8px;
 }
 
-/* SVG */
-.icon svg {
-  width: 16px;
-  height: 16px;
-  stroke: #c0c4c9;
+@media(max-width:640px){
+  .search-box{flex-direction:column;}
 }
 
-/* 已完成（淡灰勾） */
-.step.done svg {
-  stroke: #9ca3af;
+input{
+  flex:1;
+  height:44px;
+  padding:0 12px;
+  border:1px solid #e5e7eb;
+  border-radius:6px;
 }
 
-/* 當前 */
-.step.active svg {
-  stroke: white;
+button{
+  height:44px;
+  padding:0 18px;
+  background:#111827;
+  color:white;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  transition:all .2s;
 }
 
-/* 文字 */
-.title-step {
-  font-size: 15px;
-  color: #9ca3af;
+button:hover{
+  background:#000;
+  transform:translateY(-1px);
 }
 
-/* 已完成 */
-.step.done .title-step {
-  color: #6b7280;
+/* card */
+.card{
+  background:white;
+  border:1px solid #e5e7eb;
+  padding:14px;
+  margin-top:18px;
+  margin-bottom:28px;
+  transition:all .2s;
 }
 
-/* 當前 */
-.step.active .title-step {
-  color: #111827;
-  font-weight: 600;
+.card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
 }
 
-/* 當前標籤 */
-.current-tag {
-  margin-top: 6px;
-  font-size: 12px;
-  background: #111827;
-  color: white;
-  padding: 4px 10px;
-  border-radius: 6px;
+.product{
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
 }
 
-/* 時間 */
-.time {
-  font-size: 12px;
-  color: #9ca3af;
-  margin-top: 6px;
+.product img{
+  width:60px;
+  height:60px;
+  object-fit:cover;
+  border-radius:6px;
+}
+
+.product-info{
+  flex:1;
+  font-size:14px;
+}
+
+/* skeleton */
+.skeleton{
+  background:linear-gradient(90deg,#eee,#ddd,#eee);
+  background-size:200%;
+  animation:loading 1.2s infinite;
+  border-radius:6px;
+}
+
+@keyframes loading{
+  0%{background-position:200%}
+  100%{background-position:-200%}
+}
+
+/* timeline */
+.timeline{
+  position:relative;
+}
+
+.timeline::before{
+  content:"";
+  position:absolute;
+  left:15px;
+  top:8px;
+  bottom:0;
+  width:1.5px;
+  background:#e5e7eb;
+}
+
+.step{
+  display:flex;
+  gap:14px;
+  margin-bottom:28px;
+  opacity:0;
+  transform:translateY(10px);
+  animation:fadeIn .4s forwards;
+}
+
+.step:nth-child(n){
+  animation-delay:calc(0.05s * var(--i));
+}
+
+@keyframes fadeIn{
+  to{opacity:1;transform:none;}
+}
+
+.icon{
+  width:30px;
+  height:30px;
+  border-radius:6px;
+  background:#f3f4f6;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.step.done .icon{
+  background:#111827;
+}
+
+.step.active .icon{
+  background:#111827;
+}
+
+.icon svg{
+  width:14px;
+  height:14px;
+  stroke:#c0c4c9;
+}
+
+.step.done svg,
+.step.active svg{
+  stroke:white;
+}
+
+.title-step{
+  font-size:14px;
+  color:#9ca3af;
+}
+
+.step.done .title-step{
+  color:#6b7280;
+}
+
+.step.active .title-step{
+  color:#111827;
+  font-weight:600;
+}
+
+.current-tag{
+  margin-top:6px;
+  font-size:11px;
+  padding:3px 8px;
+  background:#111827;
+  color:white;
+  border-radius:5px;
+}
+
+.time{
+  font-size:11px;
+  color:#9ca3af;
+  margin-top:4px;
 }
 </style>
 </head>
@@ -109,13 +218,14 @@
 <body>
 
 <div class="header">
-  <div>by Eliss Collection</div>
-  <div onclick="toggleLang()" style="cursor:pointer;">EN</div>
+  by Eliss Collection
+  <span style="float:right;cursor:pointer" onclick="toggleLang()">EN</span>
 </div>
 
 <div class="container">
 
 <div class="title" id="title">訂單追蹤</div>
+<div class="subtitle" id="subtitle">輸入訂單號碼查詢您的包裹狀態</div>
 
 <div class="search-box">
   <input id="orderId" placeholder="輸入訂單編號">
@@ -130,26 +240,22 @@
 <script>
 let lang="zh";
 
-/* 語系 */
-const text = {
+/* 多語 */
+const text={
   zh:{title:"訂單追蹤",btn:"查詢",current:"目前進度"},
   en:{title:"Order Tracking",btn:"Search",current:"Current"}
 };
 
 function toggleLang(){
-  lang = lang==="zh"?"en":"zh";
-  document.getElementById("title").innerText=text[lang].title;
-  document.getElementById("btn").innerText=text[lang].btn;
+  lang=lang==="zh"?"en":"zh";
+  title.innerText=text[lang].title;
+  btn.innerText=text[lang].btn;
 }
 
 /* icon */
-function icon(name){
-  const i={
-    check:`<svg fill="none" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>`,
-    plane:`<svg fill="none" stroke-width="2"><path d="M2 16l20-8-8 20"/></svg>`,
-    box:`<svg fill="none" stroke-width="2"><path d="M3 7l9-4 9 4-9 4z"/></svg>`
-  };
-  return i[name]||i.check;
+function getIcon(){
+  return `<svg fill="none" stroke-width="1.6" viewBox="0 0 24 24">
+  <path d="M5 13l4 4L19 7"/></svg>`;
 }
 
 /* steps */
@@ -160,47 +266,61 @@ const steps=[
 "出貨包裝中","已寄出，請準備收貨"
 ];
 
+/* URL 自動查詢 */
+window.onload=()=>{
+  const url=new URLSearchParams(window.location.search);
+  if(url.get("orderId")){
+    orderId.value=url.get("orderId");
+    checkOrder();
+  }
+}
+
 /* 查詢 */
 async function checkOrder(){
 
-  /* skeleton */
-  document.getElementById("card").innerHTML=`
+  card.innerHTML=`
   <div class="card">
-    <div class="skeleton" style="height:14px;width:70%;margin-bottom:10px;"></div>
-    <div class="skeleton" style="height:14px;width:50%;"></div>
+    <div class="skeleton" style="height:60px;"></div>
   </div>`;
 
-  document.getElementById("timeline").innerHTML=`
-  <div class="skeleton" style="height:200px;"></div>`;
+  timeline.innerHTML=`<div class="skeleton" style="height:200px;"></div>`;
 
-  const res = await fetch(`https://script.google.com/macros/s/AKfycbwEq4xA34BwxsPlfbQq2akALTk0X4g6ICvpPc8qUdxkeKT4TVNN5qfBK4ET8beIREhtaA/exec?email=test&orderId=${orderId.value}`);
-  const data = await res.json();
+  const res=await fetch(`https://script.google.com/macros/s/AKfycbwEq4xA34BwxsPlfbQq2akALTk0X4g6ICvpPc8qUdxkeKT4TVNN5qfBK4ET8beIREhtaA/exec?email=test&orderId=${orderId.value}`);
+  const data=await res.json();
 
-  /* 商品卡片 */
-  document.getElementById("card").innerHTML=`
+  /* 商品卡片（假資料，可接 Shopify） */
+  card.innerHTML=`
   <div class="card">
-    <div class="product">訂單編號：${orderId.value}</div>
-    <div class="product">狀態：${data.status}</div>
+    <div class="product">
+      <img src="https://picsum.photos/80">
+      <div class="product-info">
+        商品名稱示意 x1<br>
+        $1200
+      </div>
+    </div>
+    <div style="font-size:13px;color:#6b7280;">
+      訂單編號：${orderId.value}
+    </div>
   </div>`;
 
-  const index = steps.indexOf(data.status);
-  renderTimeline(index>=0?index:0);
+  const idx=steps.indexOf(data.status);
+  renderTimeline(idx>=0?idx:0);
 }
 
 /* timeline */
 function renderTimeline(current){
-  const el=document.getElementById("timeline");
-  el.innerHTML="";
+  timeline.innerHTML="";
 
   steps.forEach((s,i)=>{
-    let c=i<current?"done":i===current?"active":"";
+    let cls=i<current?"done":i===current?"active":"";
 
-    el.innerHTML+=`
-    <div class="step ${c}">
-      <div class="icon">${icon(i===current?"plane":"check")}</div>
+    timeline.innerHTML+=`
+    <div class="step ${cls}" style="--i:${i}">
+      <div class="icon">${getIcon()}</div>
       <div>
         <div class="title-step">${s}</div>
-        ${i===current?`<div class="current-tag">${text[lang].current}</div>
+        ${i===current?`
+        <div class="current-tag">${text[lang].current}</div>
         <div class="time">${new Date().toLocaleString()}</div>`:""}
       </div>
     </div>`;
