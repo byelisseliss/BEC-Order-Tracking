@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>訂單查詢</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      margin-top: 100px;
+    }
+    input {
+      padding: 10px;
+      margin: 5px;
+      width: 250px;
+    }
+    button {
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📦 訂單查詢</h2>
+
+  <input id="email" placeholder="輸入 Email"><br>
+  <input id="orderId" placeholder="輸入訂單編號"><br><br>
+
+  <button onclick="checkOrder()">查詢</button>
+
+  <h3 id="result"></h3>
+
+  <script>
+    async function checkOrder() {
+      const email = document.getElementById("email").value;
+      const orderId = document.getElementById("orderId").value;
+
+      const res = await fetch(`https://script.google.com/macros/s/AKfycbwEq4xA34BwxsPlfbQq2akALTk0X4g6ICvpPc8qUdxkeKT4TVNN5qfBK4ET8beIREhtaA/exec?email=${email}&orderId=${orderId}`);
+      const data = await res.json();
+
+      document.getElementById("result").innerText = "訂單狀態：" + data.status;
+    }
+  </script>
+
+</body>
+</html>
