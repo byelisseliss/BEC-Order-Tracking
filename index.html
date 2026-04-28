@@ -117,8 +117,8 @@
 <div id="timeline" class="timeline"></div>
   
   <script>
-   <script>
-const steps = [
+
+    const steps = [
   "已接收訂單",
   "正在採購",
   "採購完成，前往海外轉運站",
@@ -132,20 +132,6 @@ const steps = [
   "已寄出，請準備收貨"
 ];
 
-const statusMap = {
-  "已接收訂單": 0,
-  "正在採購": 1,
-  "採購完成，前往海外轉運站": 2,
-  "已抵達海外轉運站": 3,
-  "前往海外機場": 4,
-  "抵達海外機場，理貨中": 5,
-  "已上飛機": 6,
-  "抵達台灣，清關中": 7,
-  "已入庫台灣工作室": 8,
-  "出貨包裝中": 9,
-  "已寄出，請準備收貨": 10
-};
-
 async function checkOrder() {
   const email = document.getElementById("email").value;
   const orderId = document.getElementById("orderId").value;
@@ -155,8 +141,10 @@ async function checkOrder() {
 
   document.getElementById("result").innerText = "訂單狀態：" + data.status;
 
-  const stepIndex = statusMap[data.status] ?? 0;
-  renderTimeline(stepIndex);
+  // 👉 找對應 index（不用 map，直接找）
+  const stepIndex = steps.indexOf(data.status);
+
+  renderTimeline(stepIndex >= 0 ? stepIndex : 0);
 }
 
 function renderTimeline(currentStepIndex) {
