@@ -48,7 +48,7 @@
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: #e5e7eb;
+  background: #f3f4f6;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -117,22 +117,22 @@
 <div id="timeline" class="timeline"></div>
   
   <script>
-    async function checkOrder() {
-      const email = document.getElementById("email").value;
-      const orderId = document.getElementById("orderId").value;
+   <script>
+const steps = [
+  "已接收訂單",
+  "正在採購",
+  "採購完成，前往海外轉運站",
+  "已抵達海外轉運站",
+  "前往海外機場",
+  "抵達海外機場，理貨中",
+  "已上飛機",
+  "抵達台灣，清關中",
+  "已入庫台灣工作室",
+  "出貨包裝中",
+  "已寄出，請準備收貨"
+];
 
-      const res = await fetch(`https://script.google.com/macros/s/AKfycbwEq4xA34BwxsPlfbQq2akALTk0X4g6ICvpPc8qUdxkeKT4TVNN5qfBK4ET8beIREhtaA/exec?email=${email}&orderId=${orderId}`);
-      const data = await res.json();
-
-      document.getElementById("result").innerText = "訂單狀態：" + data.status;
-
-      const stepIndex = statusMap[data.status] ?? 0;
-renderTimeline(stepIndex);
-    }
-
-  
-  function renderTimeline(currentStepIndex) {
-  const statusMap = {
+const statusMap = {
   "已接收訂單": 0,
   "正在採購": 1,
   "採購完成，前往海外轉運站": 2,
@@ -146,6 +146,20 @@ renderTimeline(stepIndex);
   "已寄出，請準備收貨": 10
 };
 
+async function checkOrder() {
+  const email = document.getElementById("email").value;
+  const orderId = document.getElementById("orderId").value;
+
+  const res = await fetch(`https://script.google.com/macros/s/AKfycbwEq4xA34BwxsPlfbQq2akALTk0X4g6ICvpPc8qUdxkeKT4TVNN5qfBK4ET8beIREhtaA/exec?email=${email}&orderId=${orderId}`);
+  const data = await res.json();
+
+  document.getElementById("result").innerText = "訂單狀態：" + data.status;
+
+  const stepIndex = statusMap[data.status] ?? 0;
+  renderTimeline(stepIndex);
+}
+
+function renderTimeline(currentStepIndex) {
   const timeline = document.getElementById("timeline");
   timeline.innerHTML = "";
 
@@ -176,6 +190,7 @@ renderTimeline(stepIndex);
     timeline.appendChild(stepEl);
   });
 }
+</script>
   
   </script>
 
