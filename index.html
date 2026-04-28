@@ -242,20 +242,19 @@ let lang="zh";
 
 /* 多語 */
 const text={
-  zh:{title:"訂單追蹤",btn:"查詢",current:"目前進度"},
-  en:{title:"Order Tracking",btn:"Search",current:"Current"}
+zh:{title:"訂單追蹤",btn:"查詢",current:"目前進度"},
+en:{title:"Order Tracking",btn:"Search",current:"Current"}
 };
 
 function toggleLang(){
-  lang=lang==="zh"?"en":"zh";
-  title.innerText=text[lang].title;
-  btn.innerText=text[lang].btn;
+lang=lang==="zh"?"en":"zh";
+title.innerText=text[lang].title;
+btn.innerText=text[lang].btn;
 }
 
 /* icon */
 function getIcon(){
-  return `<svg fill="none" stroke-width="1.6" viewBox="0 0 24 24">
-  <path d="M5 13l4 4L19 7"/></svg>`;
+return `<svg fill="none" stroke-width="1.6" viewBox="0 0 24 24">   <path d="M5 13l4 4L19 7"/></svg>`;
 }
 
 /* steps */
@@ -266,66 +265,107 @@ const steps=[
 "出貨包裝中","已寄出，請準備收貨"
 ];
 
-/* URL 自動查詢 */
-window.onload=()=>{
-  const url=new URLSearchParams(window.location.search);
-  if(url.get("orderId")){
-    orderId.value=url.get("orderId");
-    checkOrder();
-  }
+/* 自動刷新 */
+let autoTimer;
+
+function startAutoRefresh(){
+clearInterval(autoTimer);
+autoTimer = setInterval(()=>{
+if(orderId.value){
+fetchOrder();
+}
+}, 8000); // 8秒刷新
 }
 
-/* 查詢 */
-async function checkOrder(){
+/* URL 自動查詢 */
+window.onload=()=>{
+const url=new URLSearchParams(window.location.search);
+if(url.get("orderId")){
+orderId.value=url.get("orderId");
+fetchOrder();
+}
+}
 
-  card.innerHTML=`
+/* 主查詢（含防快取） */
+async function fetchOrder(){
+
+card.innerHTML=`
+
   <div class="card">
     <div class="skeleton" style="height:60px;"></div>
   </div>`;
 
-  timeline.innerHTML=`<div class="skeleton" style="height:200px;"></div>`;
+timeline.innerHTML=`<div class="skeleton" style="height:200px;"></div>`;
 
-  const res=await fetch(`https://script.google.com/macros/s/AKfycbwEq4xA34BwxsPlfbQq2akALTk0X4g6ICvpPc8qUdxkeKT4TVNN5qfBK4ET8beIREhtaA/exec?email=test&orderId=${orderId.value}`);
-  const data=await res.json();
+try{
+const res=await fetch(`https://script.google.com/macros/s/AKfycbwEq4xA34BwxsPlfbQq2akALTk0X4g6ICvpPc8qUdxkeKT4TVNN5qfBK4ET8beIREhtaA/exec?email=test&orderId=${orderId.value}&t=${Date.now()}`);
+const data=await res.json();
 
-  /* 商品卡片（假資料，可接 Shopify） */
-  card.innerHTML=`
+```
+renderProduct(data);
+updateStatus(data.status, data.time);
+
+startAutoRefresh();
+```
+
+}catch(err){
+card.innerHTML=`<div class="card">讀取失敗</div>`;
+}
+}
+
+/* 商品卡片（Shopify資料） */
+function renderProduct(data){
+
+const items = data.items || [];
+
+let itemsHTML = items.map(i=>`     <div class="product">       <img src="${i.image || 'https://picsum.photos/80'}">       <div class="product-info">
+        ${i.name} x${i.qty}<br>
+        $${i.price}       </div>     </div>
+  `).join("");
+
+card.innerHTML=`
+
   <div class="card">
-    <div class="product">
-      <img src="https://picsum.photos/80">
-      <div class="product-info">
-        商品名稱示意 x1<br>
-        $1200
-      </div>
-    </div>
+    ${itemsHTML || "無商品資料"}
     <div style="font-size:13px;color:#6b7280;">
       訂單編號：${orderId.value}
     </div>
   </div>`;
+}
 
-  const idx=steps.indexOf(data.status);
-  renderTimeline(idx>=0?idx:0);
+/* 更新狀態 */
+function updateStatus(status, time){
+const idx = steps.findIndex(s => status && status.includes(s));
+renderTimeline(idx >= 0 ? idx : 0, time);
 }
 
 /* timeline */
-function renderTimeline(current){
-  timeline.innerHTML="";
+function renderTimeline(current, time){
+timeline.innerHTML="";
 
-  steps.forEach((s,i)=>{
-    let cls=i<current?"done":i===current?"active":"";
+steps.forEach((s,i)=>{
+let cls=i<current?"done":i===current?"active":"";
 
-    timeline.innerHTML+=`
-    <div class="step ${cls}" style="--i:${i}">
-      <div class="icon">${getIcon()}</div>
-      <div>
-        <div class="title-step">${s}</div>
-        ${i===current?`
-        <div class="current-tag">${text[lang].current}</div>
-        <div class="time">${new Date().toLocaleString()}</div>`:""}
-      </div>
-    </div>`;
-  });
+```
+timeline.innerHTML+=`
+<div class="step ${cls}" style="--i:${i}">
+  <div class="icon">${getIcon()}</div>
+  <div>
+    <div class="title-step">${s}</div>
+    ${i===current?`
+    <div class="current-tag">${text[lang].current}</div>
+    <div class="time">${time || new Date().toLocaleString()}</div>`:""}
+  </div>
+</div>`;
+```
+
+});
 }
+
+
+
+
+  
 </script>
 
 </body>
