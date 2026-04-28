@@ -20,82 +20,94 @@
     }
 
 /* 🚛 status line */
-  .timeline { 
-  width: 320px;
-  margin: 40px auto;
+.timeline {
+  width: 420px;
+  margin: 60px auto;
   position: relative;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  text-align: left;
 }
 
+/* 垂直線 */
 .timeline::before {
   content: "";
   position: absolute;
-  left: 20px;
+  left: 18px;
   top: 0;
   bottom: 0;
   width: 2px;
-  background: #d1d5db;
+  background: #e5e7eb;
 }
 
+/* 每一列 */
 .step {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 28px;
+  gap: 16px;
+  margin-bottom: 34px;
   position: relative;
 }
 
+/* icon 方塊 */
 .icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
   background: #f3f4f6;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
-  font-size: 18px;
+  color: #9ca3af;
+  font-size: 14px;
   z-index: 1;
 }
 
-.step.active .icon {
-  background: #374151;
-  color: white;
-}
-
+/* 已完成 */
 .step.done .icon {
-  background: #4b5563;
-  color: white;
+  background: #2f343a;
+  color: #ffffff;
 }
 
+/* 當前 */
+.step.active .icon {
+  background: #1f2937;
+  color: #ffffff;
+}
+
+/* 文字區 */
 .content {
-  margin-left: 16px;
+  margin-top: 4px;
 }
 
+/* 標題 */
 .title {
   font-size: 15px;
   color: #9ca3af;
+  letter-spacing: 0.2px;
 }
 
-.step.active .title,
-.step.done .title {
+/* 完成 & 當前 */
+.step.done .title,
+.step.active .title {
   color: #111827;
   font-weight: 500;
 }
 
+/* 當前標籤 */
 .current-tag {
   display: inline-block;
-  margin-top: 6px;
+  margin-top: 8px;
   padding: 4px 10px;
   font-size: 12px;
-  background: #374151;
-  color: white;
+  background: #1f2937;
+  color: #ffffff;
   border-radius: 6px;
 }
 
+/* 時間 */
 .time {
+  margin-top: 6px;
   font-size: 12px;
   color: #9ca3af;
-  margin-top: 6px;
 }
 
   
@@ -141,9 +153,7 @@ async function checkOrder() {
 
   document.getElementById("result").innerText = "訂單狀態：" + data.status;
 
-  // 👉 找對應 index（不用 map，直接找）
   const stepIndex = steps.indexOf(data.status);
-
   renderTimeline(stepIndex >= 0 ? stepIndex : 0);
 }
 
@@ -178,8 +188,7 @@ function renderTimeline(currentStepIndex) {
     timeline.appendChild(stepEl);
   });
 }
-</script>
-  
+
   </script>
 
 </body>
