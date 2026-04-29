@@ -1,308 +1,140 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Order Tracking</title>
-<style>
-body{
-  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-  background:#f6f7f9;
-  margin:0;
-}
-.header{
-  text-align:center;
-  font-size:13px;
-  color:#6b7280;
-  padding:16px;
-  border-bottom:1px solid #eee;
-}
-.container{
-  max-width:560px;
-  margin:auto;
-  padding:24px 16px;
-}
-.title{
-  text-align:center;
-  font-size:24px;
-  font-weight:600;
-}
-.subtitle{
-  text-align:center;
-  font-size:13px;
-  color:#9ca3af;
-  margin:6px 0 20px;
-}
-.search-box{
-  display:flex;
-  gap:8px;
-}
-@media(max-width:640px){
-  .search-box{flex-direction:column;}
-}
-input{
-  flex:1;
-  height:44px;
-  padding:0 12px;
-  border:1px solid #e5e7eb;
-  border-radius:6px;
-}
-button{
-  height:44px;
-  padding:0 18px;
-  background:#111827;
-  color:white;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  transition:all .2s;
-}
-button:hover{
-  background:#000;
-  transform:translateY(-1px);
-}
-.card{
-  background:white;
-  border:1px solid #e5e7eb;
-  padding:14px;
-  margin-top:18px;
-  margin-bottom:28px;
-  transition:all .2s;
-}
-.card:hover{
-  transform:translateY(-2px);
-  box-shadow:0 6px 18px rgba(0,0,0,0.06);
-}
-.product{
-  display:flex;
-  gap:10px;
-  margin-bottom:10px;
-}
-.product img{
-  width:60px;
-  height:60px;
-  object-fit:cover;
-  border-radius:6px;
-}
-.product-info{
-  flex:1;
-  font-size:14px;
-}
-.skeleton{
-  background:linear-gradient(90deg,#eee,#ddd,#eee);
-  background-size:200%;
-  animation:loading 1.2s infinite;
-  border-radius:6px;
-}
-@keyframes loading{
-  0%{background-position:200%}
-  100%{background-position:-200%}
-}
-.timeline{
-  position:relative;
-}
-.timeline::before{
-  content:"";
-  position:absolute;
-  left:15px;
-  top:8px;
-  bottom:0;
-  width:1.5px;
-  background:#e5e7eb;
-}
-.step{
-  display:flex;
-  gap:14px;
-  margin-bottom:28px;
-  opacity:0;
-  transform:translateY(10px);
-  animation:fadeIn .4s forwards;
-}
-.step:nth-child(n){
-  animation-delay:calc(0.05s * var(--i));
-}
-@keyframes fadeIn{
-  to{opacity:1;transform:none;}
-}
-.icon{
-  width:30px;
-  height:30px;
-  border-radius:6px;
-  background:#f3f4f6;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.step.done .icon,
-.step.active .icon{
-  background:#111827;
-}
-.icon svg{
-  width:14px;
-  height:14px;
-  stroke:#c0c4c9;
-}
-.step.done svg,
-.step.active svg{
-  stroke:white;
-}
-.title-step{
-  font-size:14px;
-  color:#9ca3af;
-}
-.step.done .title-step{
-  color:#6b7280;
-}
-.step.active .title-step{
-  color:#111827;
-  font-weight:600;
-}
-.current-tag{
-  margin-top:6px;
-  font-size:11px;
-  padding:3px 8px;
-  background:#111827;
-  color:white;
-  border-radius:5px;
-  display:inline-block;
-}
-.time{
-  font-size:11px;
-  color:#9ca3af;
-  margin-top:4px;
-}
-</style>
-</head>
+function doGet(e) {
+  const orderId = String(e.parameter.orderId || "").trim();
 
-<body>
+  if (!orderId) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "請提供訂單號"
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
 
-<div class="header">
-  by Eliss Collection
-  <span style="float:right;cursor:pointer" onclick="toggleLang()">EN</span>
-</div>
+  // ✅ Cache（60秒）
+  const cache = CacheService.getScriptCache();
+  const cached = cache.get(orderId);
+  if (cached) {
+    return ContentService
+      .createTextOutput(cached)
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 
-<div class="container">
-  <div class="title" id="title">訂單追蹤</div>
-  <div class="subtitle" id="subtitle">輸入訂單號碼查詢您的包裹狀態</div>
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
 
-  <div class="search-box">
-    <input id="orderId" placeholder="輸入訂單編號">
-    <button onclick="fetchOrder()" id="btn">查詢</button>
-  </div>
+  // ✅ 只抓必要欄位（A~H = 8欄）
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) {
+    return ContentService.createTextOutput(JSON.stringify({
+      status: "尚無資料"
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
 
-  <div id="card"></div>
-  <div id="timeline"></div>
-</div>
+  const data = sheet.getRange(2, 1, lastRow - 1, 8).getValues();
 
-<script>
-let lang = "zh";
+  let items = [];
+  let status = "";
+  let time = "";
 
-const text = {
-  zh: { title: "訂單追蹤", btn: "查詢", current: "目前進度" },
-  en: { title: "Order Tracking", btn: "Search", current: "Current" }
-};
+  for (let i = 0; i < data.length; i++) {
+    const row = data[i];
+    const sheetOrderId = String(row[1]).trim();
 
-function toggleLang() {
-  lang = lang === "zh" ? "en" : "zh";
-  document.getElementById("title").innerText = text[lang].title;
-  document.getElementById("btn").innerText = text[lang].btn;
-}
+    if (sheetOrderId === orderId) {
+      items.push({
+        name: row[4],
+        qty: row[5],
+        price: row[6],
+        image: row[7]
+      });
 
-function getIcon() {
-  return `<svg fill="none" stroke-width="1.6" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>`;
-}
-
-const steps = [
-  "已接收訂單", "正在採購", "採購完成，前往海外轉運站",
-  "已抵達海外轉運站", "前往海外機場", "抵達海外機場，理貨中",
-  "已上飛機", "抵達台灣，清關中", "已入庫台灣工作室",
-  "出貨包裝中", "已寄出，請準備收貨"
-];
-
-let autoTimer;
-
-function startAutoRefresh() {
-  clearInterval(autoTimer);
-  autoTimer = setInterval(() => {
-    if (document.getElementById("orderId").value) {
-      fetchOrder();
+      if (!status) status = String(row[2]).trim();
+      if (!time) time = row[3];
     }
-  }, 8000);
+  }
+
+  let response;
+
+  if (items.length > 0) {
+    response = {
+      status: status,
+      time: time,
+      items: items
+    };
+  } else {
+    response = {
+      status: "找不到訂單"
+    };
+  }
+
+  const json = JSON.stringify(response);
+
+  // ✅ 存 cache
+  cache.put(orderId, json, 60);
+
+  return ContentService
+    .createTextOutput(json)
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
-window.onload = () => {
-  const url = new URLSearchParams(window.location.search);
-  if (url.get("orderId")) {
-    document.getElementById("orderId").value = url.get("orderId");
-    fetchOrder();
-  }
-};
 
-async function fetchOrder() {
-  const orderIdVal = document.getElementById("orderId").value;
-  const card = document.getElementById("card");
-  const timeline = document.getElementById("timeline");
 
-  card.innerHTML = `<div class="card"><div class="skeleton" style="height:60px;"></div></div>`;
-  timeline.innerHTML = `<div class="skeleton" style="height:200px;"></div>`;
-
+function doPost(e) {
   try {
-    const res = await fetch(`https://script.google.com/macros/s/AKfycbxk1-70CwWn7p24KplCatFCmOZ_GVE09zmBb9td_UijEMq0mNTeqv58CBKBdJ_AGYp0_g/exec?orderId=${orderIdVal}&t=${Date.now()}`);
-    const data = await res.json();
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+    const data = JSON.parse(e.postData.contents);
 
-    renderProduct(data, orderIdVal);
-    updateStatus(data.status, data.time);
-    startAutoRefresh();
+    const email = data.email || "無email";
+    const orderId = data.name ? data.name.replace("#", "") : "無訂單號";
+    const createdAt = data.created_at 
+      ? new Date(data.created_at).toLocaleString() 
+      : "無時間";
 
-  } catch (err) {
-    card.innerHTML = `<div class="card">讀取失敗，請稍後再試</div>`;
+    const items = data.line_items || [];
+
+    // ✅ 防重複
+    const lastRow = sheet.getLastRow();
+    if (lastRow > 1) {
+      const existingIds = sheet.getRange(2, 2, lastRow - 1, 1)
+        .getValues()
+        .flat()
+        .map(id => String(id).trim());
+
+      if (existingIds.includes(orderId)) {
+        return ContentService.createTextOutput("EXISTS")
+          .setMimeType(ContentService.MimeType.TEXT);
+      }
+    }
+
+    // ✅ 無商品
+    if (items.length === 0) {
+      sheet.appendRow([
+        email, orderId, "已接收訂單", createdAt,
+        "無商品", "", "", ""
+      ]);
+    } else {
+
+      // ✅ 批次寫入
+      const rows = items.map(item => [
+        email,
+        orderId,
+        "已接收訂單",
+        createdAt,
+        item.title,
+        item.quantity,
+        item.price,
+        item.image?.src || ""
+      ]);
+
+      sheet.getRange(
+        sheet.getLastRow() + 1,
+        1,
+        rows.length,
+        rows[0].length
+      ).setValues(rows);
+    }
+
+    return ContentService.createTextOutput("OK")
+      .setMimeType(ContentService.MimeType.TEXT);
+
+  } catch (error) {
+    return ContentService.createTextOutput("Error: " + error.toString())
+      .setMimeType(ContentService.MimeType.TEXT);
   }
 }
-
-function renderProduct(data, orderIdVal) {
-  const card = document.getElementById("card");
-  const items = data.items || [];
-
-  let itemsHTML = items.map(i => `
-    <div class="product">
-      <img src="${i.image || 'https://picsum.photos/80'}">
-      <div class="product-info">
-        ${i.name} x${i.qty}<br>$${i.price}
-      </div>
-    </div>
-  `).join("");
-
-  card.innerHTML = `
-    <div class="card">
-      ${itemsHTML || "無商品資料"}
-      <div style="font-size:13px;color:#6b7280;">訂單編號：${orderIdVal}</div>
-    </div>`;
-}
-
-function updateStatus(status, time) {
-  const idx = steps.findIndex(s => status && status.includes(s));
-  renderTimeline(idx >= 0 ? idx : 0, time);
-}
-
-function renderTimeline(current, time) {
-  const timeline = document.getElementById("timeline");
-  timeline.innerHTML = "";
-
-  steps.forEach((s, i) => {
-    let cls = i < current ? "done" : i === current ? "active" : "";
-    timeline.innerHTML += `
-      <div class="step ${cls}" style="--i:${i}">
-        <div class="icon">${getIcon()}</div>
-        <div>
-          <div class="title-step">${s}</div>
-          ${i === current ? `
-            <div class="current-tag">${text[lang].current}</div>
-            <div class="time">${time || new Date().toLocaleString()}</div>` : ""}
-        </div>
-      </div>`;
-  });
-}
-</script>
-
-</body>
-</html>
