@@ -272,7 +272,9 @@ function startAutoRefresh(){
 clearInterval(autoTimer);
 autoTimer = setInterval(()=>{
 if(orderId.value){
-fetchOrder();
+
+  
+  fetchOrder();
 }
 }, 8000); // 8秒刷新
 }
@@ -287,6 +289,10 @@ fetchOrder();
 }
 
 /* 主查詢（含防快取） */
+  function checkOrder() {
+  fetchOrder();
+}
+
 async function fetchOrder(){
 
 card.innerHTML=`
