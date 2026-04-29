@@ -229,7 +229,8 @@ button:hover{
 
 <div class="search-box">
   <input id="orderId" placeholder="輸入訂單編號">
-  <button onclick="checkOrder()" id="btn">查詢</button>
+  <button onclick="fetchOrder()" id="btn">查詢</button>
+
 </div>
 
 <div id="card"></div>
@@ -289,9 +290,7 @@ fetchOrder();
 }
 
 /* 主查詢（含防快取） */
-  function checkOrder() {
-  fetchOrder();
-}
+
 
 async function fetchOrder(){
 
